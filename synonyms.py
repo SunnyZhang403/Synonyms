@@ -1,5 +1,4 @@
 '''Semantic Similarity: starter code
-
 Author: Michael Guerzhoy. Last modified: Nov. 18, 2022.
 '''
 
@@ -42,6 +41,8 @@ def build_semantic_descriptors(sentences):
                     else:
                         curworddict[k] = curworddict[k] +1
             for m in curworddict:
+                if curword == "":
+                    continue
                 if len(m) < 0:
                     continue
                 if m not in words[curword]:
@@ -57,7 +58,7 @@ def build_semantic_descriptors_from_files(filenames):
     allwords = []
     for i in range(len(filenames)):
 
-        curfile = open(filenames[i])
+        curfile = open(filenames[i], encoding = "latin1")
         text = curfile.read()
         sentences = re.split('\? |\! |\. |\.|\?|\!', text)
         for j in range (len(sentences)):
@@ -90,6 +91,7 @@ def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
 
 def run_similarity_test(filename, semantic_descriptors, similarity_fn):
 
+
     curfile = open(filename)
     text = curfile.read()
     curscore =0
@@ -101,3 +103,5 @@ def run_similarity_test(filename, semantic_descriptors, similarity_fn):
         if most_similar_word(word,choices,semantic_descriptors, cosine_similarity) == coranswer:
             curscore = curscore+1
     return curscore/len(text.split("\n"))*100
+
+
