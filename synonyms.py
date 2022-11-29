@@ -25,7 +25,7 @@ def dotprod(vec1, vec2):
 
 def cosine_similarity(vec1, vec2):
     return dotprod(vec1,vec2)/(norm(vec1)*norm(vec2))
-# print(cosine_similarity({"a": 1, "b": 2, "c": 3}, {"b": 4, "c": 5, "d": 6}))
+
 def build_semantic_descriptors(sentences):
     words = {}
     for i in range (len(sentences)):
@@ -52,13 +52,6 @@ def build_semantic_descriptors(sentences):
 
     return words
 
-# print(build_semantic_descriptors([["i", "am", "a", "sick", "man"],
-# ["i", "am", "a", "spiteful", "man"],
-# ["i", "am", "an", "unattractive", "man"],
-# ["i", "believe", "my", "liver", "is", "diseased"],
-# ["however", "i", "know", "nothing", "at", "all", "about", "my",
-# "disease", "and", "do", "not", "know", "for", "certain", "what", "ails", "me"]]))
-
 def build_semantic_descriptors_from_files(filenames):
     punc = [",", "-","--", ":", ";"]
     allwords = []
@@ -69,7 +62,9 @@ def build_semantic_descriptors_from_files(filenames):
         sentences = re.split('\? |\! |\. |\.|\?|\!', text)
         for j in range (len(sentences)):
             lowsentence = sentences[j].lower()
-            modsentence = re.sub("\,|\-|\:|\;|", "", lowsentence)
+            modsentence1 = re.sub("\,|\:|\;|", "", lowsentence)
+            modsentence2 = re.sub("\-|\n", " ",modsentence1)
+
 
             words = modsentence.split(" ")
             allwords.append(words)
@@ -77,7 +72,6 @@ def build_semantic_descriptors_from_files(filenames):
     desc = build_semantic_descriptors(allwords)
 
     return desc
-# print(build_semantic_descriptors_from_files(["mickeymouse.txt","mickeymouse2.txt"]))
 
 
 
@@ -93,7 +87,7 @@ def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
 
 
     return words[wordscores.index(max(wordscores))]
-#most_similar_word("i", ["to", "am"], build_semantic_descriptors_from_files(["mickeymouse.txt"]), cosine_similarity)
+
 def run_similarity_test(filename, semantic_descriptors, similarity_fn):
 
     curfile = open(filename)
