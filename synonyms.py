@@ -1,54 +1,105 @@
-import synonyms as syn
-def test_cosine_similarity(self):
-    self.assertAlmostEqual(syn.cosine_similarity({"a": 1, "b": 2, "c": 3}, {"b": 4, "c": 5, "d": 6}), 0.7, places = 2)
+'''Semantic Similarity: starter code
+
+Author: Michael Guerzhoy. Last modified: Nov. 18, 2022.
+'''
+
+import math
+import re
+
+def norm(vec):
+    '''Return the norm of a vector stored as a dictionary, as
+    described in the handout for Project 3.
+    '''
+
+    sum_of_squares = 0.0
+    for x in vec:
+        sum_of_squares += vec[x] * vec[x]
+
+    return math.sqrt(sum_of_squares)
+def dotprod(vec1, vec2):
+    dotprod = 0
+    for n in vec1:
+        if n in vec2:
+            dotprod = dotprod + vec1[n]*vec2[n]
+    return dotprod
+
+def cosine_similarity(vec1, vec2):
+    return dotprod(vec1,vec2)/(norm(vec1)*norm(vec2))
+# print(cosine_similarity({"a": 1, "b": 2, "c": 3}, {"b": 4, "c": 5, "d": 6}))
+def build_semantic_descriptors(sentences):
+    words = {}
+    for i in range (len(sentences)):
+        for curword in sentences[i]:
+            curworddict = {}
+            if len(curword) ==None:
+                continue
+            if curword not in words and len(curword) >= 1:
+                words[curword] = {}
+            for k in sentences[i]:
+                if k != curword:
+                    if k not in curworddict:
+                        curworddict[k] = 1
+                    else:
+                        curworddict[k] = curworddict[k] +1
+            for m in curworddict:
+                if len(m) < 0:
+                    continue
+                if m not in words[curword]:
+                    words[curword][m] = curworddict[m]
+                else:
+                    words[curword][m] = words[curword][m] + curworddict[m]
 
 
-def test_build_semantic_descriptors(self):
-    sentences = [["i", "am", "a", "sick", "man"],
-    ["i", "am", "a", "spiteful", "man"],
-    ["i", "am", "an", "unattractive", "man"],
-    ["i", "believe", "my", "liver", "is", "diseased"],
-    ["however", "i", "know", "nothing", "at", "all", "about", "my",
-    "disease", "and", "do", "not", "know", "for", "certain", "what", "ails", "me"]]
-    sem_desc = syn.build_semantic_descriptors(sentences)
-    self.assertEqual(sem_desc["man"], {"i": 3, "am": 3, "a": 2, "sick": 1, "spiteful": 1, "an": 1,"unattractive": 1})
+    return words
 
-    self.assertEqual(sem_desc["liver"], {"i": 1, "believe": 1, "my": 1, "is": 1, "diseased": 1})
+# print(build_semantic_descriptors([["i", "am", "a", "sick", "man"],
+# ["i", "am", "a", "spiteful", "man"],
+# ["i", "am", "an", "unattractive", "man"],
+# ["i", "believe", "my", "liver", "is", "diseased"],
+# ["however", "i", "know", "nothing", "at", "all", "about", "my",
+# "disease", "and", "do", "not", "know", "for", "certain", "what", "ails", "me"]]))
 
+def build_semantic_descriptors_from_files(filenames):
+    punc = [",", "-","--", ":", ";"]
+    allwords = []
+    for i in range(len(filenames)):
 
-def test_build_semantic_descriptors_from_files(self):
-    f1 = open("text1.txt", "w")
-    f2 = open("text2.txt", "w")
-    f1.write("I am a sick man. I am a spiteful man. I am an unattractive man. I believe my liver is diseased.\n")
-    f2.write("However, I know nothing at all about my disease, and do not know for certain what ails me.")
-    f1.close()
-    f2.clos
-    sem_desc = syn.build_semantic_descriptors_from_files(["text1.txt", "text2.txt"])
-    self.assertEqual(sem_desc["man"], {"i": 3, "am": 3, "a": 2, "sick": 1, "spiteful": 1, "an": 1,
-"unattractive": 1})
-    self.assertEqual(sem_desc["liver"], {"i": 1, "believe": 1, "my": 1, "is": 1, "diseased":1})
-    self.assertEqual(sem_desc["nothing"]["ails"], 1)
+        curname = "D:\\Laptop Archive\\Sunny\\School Work\\UofT 2022-2023\\ESC180\\projects\\%s" %filenames[i]
+        curfile = open(curname)
+        text = curfile.read()
+        sentences = re.split('\? |\! |\. |\.|\?|\!', text)
+        for j in range (len(sentences)):
+            modsentence = re.sub("\,|\-|\:|\;|", "", sentences[j])
 
-# @weight(1)
-# @visibility("visible")
-def test_most_similar_word(self):
-    sem_desc = {"dog": {"cat": 1, "food": 1},"cat": {"dog": 1}}
-    self.assertEqual(syn.most_similar_word("dog", ["cat", "rat"], sem_desc, syn.cosine_similarity), "cat")
+            words = modsentence.split(" ")
+            allwords.append(words)
+
+    desc = build_semantic_descriptors(allwords)
+
+    return desc
+# print(build_semantic_descriptors_from_files(["mickeymouse.txt","mickeymouse2.txt"]))
 
 
-def test_run_similarity_test(self):
-    f1 = open("text1.txt", "w")
-    f2 = open("text2.txt", "w")
-    f1.write("I am a sick man. I am a spiteful man. I am an unattractive man. I believe my liver is diseased\n")
-    f2.write("However, I know nothing at all about my disease, and do not know for certain what ails me.")
-    f1.close()
-    f2.clo
 
-    f3 = open("test.txt", "w")
-    f3.write("man i liver i\nsick man certain man")
-    f3.close()
-    sem_desc = syn.build_semantic_descriptors_from_files(["text1.txt", "text2.txt"])
-    res = syn.run_similarity_test("test.txt", sem_desc, syn.cosine_similarity)
-    self.assertEqual(res, 100.0)
-
-test_cosine_similarity(self)
+def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
+    scores = {}
+    for choice in choices:
+        if choice not in semantic_descriptors:
+            scores[choice] = -1
+        else:
+            scores[choice] = cosine_similarity(semantic_descriptors[word], semantic_descriptors[choice])
+    return max(scores)
+most_similar_word("i", ["to", "am"], build_semantic_descriptors_from_files(["mickeymouse.txt"]), cosine_similarity)
+def run_similarity_test(filename, semantic_descriptors, similarity_fn):
+    curname = "D:\\Laptop Archive\\Sunny\\School Work\\UofT 2022-2023\\ESC180\\projects\\%s"%filename
+    curfile = open(curname)
+    text = curfile.read()
+    curscore =0
+    for l in text.split("\n"):
+        store = l.split(' ')
+        word = store[0]
+        coranswer = store[1]
+        choices = store[2:]
+        if most_similar_word(word,choices,semantic_descriptors, cosine_similarity) == coranswer:
+            curscore = curscore+1
+    return curscore/len(text.split("\n"))*100
