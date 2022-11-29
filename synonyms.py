@@ -68,9 +68,10 @@ def build_semantic_descriptors_from_files(filenames):
         text = curfile.read()
         sentences = re.split('\? |\! |\. |\.|\?|\!', text)
         for j in range (len(sentences)):
-            modsentence = re.sub("\,|\-|\:|\;|", "", sentences[j])
+            lowsentence = sentences[j].lower()
+            modsentence = re.sub("\,|\-|\:|\;|", "", lowsentence)
 
-            words = lower.(modsentence.split(" "))
+            words = modsentence.split(" ")
             allwords.append(words)
 
     desc = build_semantic_descriptors(allwords)
@@ -87,7 +88,11 @@ def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
             scores[choice] = -1
         else:
             scores[choice] = cosine_similarity(semantic_descriptors[word], semantic_descriptors[choice])
-    return max(scores)
+    wordscores = list(scores.values())
+    words = list(scores.keys())
+
+
+    return words[wordscores.index(max(wordscores))]
 #most_similar_word("i", ["to", "am"], build_semantic_descriptors_from_files(["mickeymouse.txt"]), cosine_similarity)
 def run_similarity_test(filename, semantic_descriptors, similarity_fn):
 
