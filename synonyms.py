@@ -70,7 +70,7 @@ def build_semantic_descriptors_from_files(filenames):
         for j in range (len(sentences)):
             modsentence = re.sub("\,|\-|\:|\;|", "", sentences[j])
 
-            words = modsentence.split(" ")
+            words = lower.(modsentence.split(" "))
             allwords.append(words)
 
     desc = build_semantic_descriptors(allwords)
