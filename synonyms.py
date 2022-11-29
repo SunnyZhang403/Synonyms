@@ -66,7 +66,7 @@ def build_semantic_descriptors_from_files(filenames):
             modsentence2 = re.sub("\-|\n", " ",modsentence1)
 
 
-            words = modsentence.split(" ")
+            words = modsentence2.split(" ")
             allwords.append(words)
 
     desc = build_semantic_descriptors(allwords)
