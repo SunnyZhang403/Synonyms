@@ -89,7 +89,7 @@ def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
         else:
             scores[choice] = cosine_similarity(semantic_descriptors[word], semantic_descriptors[choice])
     return max(scores)
-most_similar_word("i", ["to", "am"], build_semantic_descriptors_from_files(["mickeymouse.txt"]), cosine_similarity)
+#most_similar_word("i", ["to", "am"], build_semantic_descriptors_from_files(["mickeymouse.txt"]), cosine_similarity)
 def run_similarity_test(filename, semantic_descriptors, similarity_fn):
     curname = "D:\\Laptop Archive\\Sunny\\School Work\\UofT 2022-2023\\ESC180\\projects\\%s"%filename
     curfile = open(curname)
