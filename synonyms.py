@@ -27,29 +27,18 @@ def cosine_similarity(vec1, vec2):
 
 def build_semantic_descriptors(sentences):
     words = {}
-    for i in range (len(sentences)):
-        for curword in sentences[i]:
-            curworddict = {}
-            if len(curword) ==None:
-                continue
-            if curword not in words and len(curword) >= 1:
+    for sentence in sentences:
+        for curword in sentence:
+            if curword == "":
+                    continue
+            if curword not in words:
                 words[curword] = {}
-            for k in sentences[i]:
+            for k in sentence:
                 if k != curword:
-                    if k not in curworddict:
-                        curworddict[k] = 1
+                    if k not in words[curword]:
+                        words[curword][k] = 1
                     else:
-                        curworddict[k] = curworddict[k] +1
-            for m in curworddict:
-                if curword == "":
-                    continue
-                if len(m) < 0:
-                    continue
-                if m not in words[curword]:
-                    words[curword][m] = curworddict[m]
-                else:
-                    words[curword][m] = words[curword][m] + curworddict[m]
-
+                        words[curword][k] = words[curword][k] + 1
 
     return words
 
